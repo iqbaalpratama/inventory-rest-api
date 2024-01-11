@@ -1,0 +1,48 @@
+-- No 1
+select * from employees;
+
+--No 2
+select count(*) 
+from employees 
+where job_title = 'Manager';
+
+--No 3
+select name, salary from employees 
+where department = 'Sales' or department = 'Marketing';
+
+--No 4
+select AVG(salary) 
+from employees 
+where year(CURRENT_DATE)-year(employees.joined_date) <= 5;
+
+--No 5
+select employees.*, SUM(sales_data.sales) as sales_total
+from employees, sales_data
+where employees.employee_id = sales_data.employee_id
+group by sales_data.employee_id
+order by sales_total DESC
+LIMIT 5;
+
+--No 6
+select name, salary, average_salary_department
+from employees, (
+    select department, avg(salary) as average_salary_department
+    from employees
+    group by employees.department
+    order by average_salary_department DESC
+    limit 1
+) as department_salary_table
+where employees.department = department_salary_table.department;
+
+--No 7
+SELECT employees.employee_id, name, sum(sales) as sales_total, row_number() over(order by sum(sales) desc) as sales_rank
+from employees, sales_data
+where employees.employee_id = sales_data.employee_id
+group by employees.employee_id
+order by sales_total desc;
+
+--No 8
+CREATE PROCEDURE getSalaryDepartment(departmentName VARCHAR(100))
+BEGIN
+    select name, salary from employees where department = departmentName;
+END;
